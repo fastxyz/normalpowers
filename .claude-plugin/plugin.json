@@ -1,0 +1,19 @@
+{
+  "name": "normalpowers",
+  "description": "Portable prompt bundle that turns any LLM into a patient interviewer who asks the right questions. For generalist knowledge workers.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Pi Squared Inc.",
+    "email": "hello@fast.xyz"
+  },
+  "homepage": "https://github.com/fastxyz/normalpowers",
+  "repository": "https://github.com/fastxyz/normalpowers",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "knowledge-work",
+    "brainstorming",
+    "interview",
+    "planning"
+  ]
+}
