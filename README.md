@@ -4,7 +4,9 @@
 
 normalpowers is a portable prompt bundle that turns ChatGPT, Gemini, or any flavor of Claude into a patient interviewer who asks the right questions, surfaces unexamined assumptions, and walks you through rigorous thinking on any knowledge-work problem.
 
-No plugin to install. No tool system required. Paste the master prompt, start a conversation.
+Works on any LLM — paste the master prompt and go. Claude Code users can install in one command.
+
+**[Download v0.1.0](https://github.com/fastxyz/normalpowers/releases/tag/v0.1.0)** — [`.zip` (Claude.ai Projects)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip) · [`.plugin` (Claude Code)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin) · [`.skill`](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill)
 
 ---
 
