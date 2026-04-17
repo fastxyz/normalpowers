@@ -1,122 +1,102 @@
-# Defense-in-Depth Validation
+# Defense-in-Depth Checkpoints
 
 ## Overview
 
-When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.
+When you fix a problem caused by bad inputs or a missed handoff, adding a single checkpoint feels sufficient. But that one check can be bypassed when a different team runs the process, when the workflow is updated, or when someone routes around the step to save time.
 
-**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.
+**Core principle:** Add checks at EVERY handoff the work passes through. Make the failure structurally impossible.
 
 ## Why Multiple Layers
 
-Single validation: "We fixed the bug"
-Multiple layers: "We made the bug impossible"
+Single checkpoint: "We fixed the problem."
+Multiple layers: "We made the problem impossible."
 
 Different layers catch different cases:
-- Entry validation catches most bugs
-- Business logic catches edge cases
-- Environment guards prevent context-specific dangers
-- Debug logging helps when other layers fail
+
+- Entry checks catch the most common bad inputs.
+- Mid-process checks catch errors that slip past entry.
+- Context-specific guards catch failures that only appear in particular situations.
+- Observability — written records and retros — helps when every other layer fails.
 
 ## The Four Layers
 
-### Layer 1: Entry Point Validation
-**Purpose:** Reject obviously invalid input at API boundary
+### Layer 1: Entry-Point Check
 
-```typescript
-function createProject(name: string, workingDirectory: string) {
-  if (!workingDirectory || workingDirectory.trim() === '') {
-    throw new Error('workingDirectory cannot be empty');
-  }
-  if (!existsSync(workingDirectory)) {
-    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);
-  }
-  if (!statSync(workingDirectory).isDirectory()) {
-    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);
-  }
-  // ... proceed
-}
-```
+**Purpose:** Reject obviously incomplete or wrong inputs at the start.
 
-### Layer 2: Business Logic Validation
-**Purpose:** Ensure data makes sense for this operation
+Example — starting a new campaign:
 
-```typescript
-function initializeWorkspace(projectDir: string, sessionId: string) {
-  if (!projectDir) {
-    throw new Error('projectDir required for workspace initialization');
-  }
-  // ... proceed
-}
-```
+- The brief must state the audience, the goal metric, the target number, and the assumed conversion rate.
+- If any of those four are missing or say "TBD", the brief isn't accepted into the pipeline.
+- If the audience named doesn't match the audience used in the forecast, the brief is rejected back for alignment.
 
-### Layer 3: Environment Guards
-**Purpose:** Prevent dangerous operations in specific contexts
+### Layer 2: Mid-Process Check
 
-```typescript
-async function gitInit(directory: string) {
-  // In tests, refuse git init outside temp directories
-  if (process.env.NODE_ENV === 'test') {
-    const normalized = normalize(resolve(directory));
-    const tmpDir = normalize(resolve(tmpdir()));
+**Purpose:** Re-verify that inputs still make sense as the work moves forward.
 
-    if (!normalized.startsWith(tmpDir)) {
-      throw new Error(
-        `Refusing git init outside temp dir during tests: ${directory}`
-      );
-    }
-  }
-  // ... proceed
-}
-```
+Example — media-plan review:
 
-### Layer 4: Debug Instrumentation
-**Purpose:** Capture context for forensics
+- Before creative is approved, confirm the audience in the plan still matches the audience in the brief.
+- Confirm the target number still reflects the forecast for that audience.
+- If either has drifted, block approval until the forecast is re-modeled or the target is updated.
 
-```typescript
-async function gitInit(directory: string) {
-  const stack = new Error().stack;
-  logger.debug('About to git init', {
-    directory,
-    cwd: process.cwd(),
-    stack,
-  });
-  // ... proceed
-}
-```
+### Layer 3: Context-Specific Guard
+
+**Purpose:** Prevent failures that only appear in particular contexts.
+
+Example — launch readiness:
+
+- For paid-media launches, block go-live if the live targeting doesn't match the approved plan.
+- For high-risk launches (above a budget threshold, or in a regulated market), require an additional named sign-off.
+- For anything touching a shared external system (PR, partnerships, compliance), require explicit confirmation from that function.
+
+### Layer 4: Documentation and Retro
+
+**Purpose:** Capture context so problems that slip through can be diagnosed.
+
+Example — post-launch:
+
+- The brief, the approved plan, and the launched version are all stored together.
+- Retros explicitly compare plan-time assumptions to launch-time reality and log deltas.
+- When something goes wrong, the chain is reconstructable without interviewing six people.
 
 ## Applying the Pattern
 
-When you find a bug:
+When you find a problem:
 
-1. **Trace the data flow** - Where does bad value originate? Where used?
-2. **Map all checkpoints** - List every point data passes through
-3. **Add validation at each layer** - Entry, business, environment, debug
-4. **Test each layer** - Try to bypass layer 1, verify layer 2 catches it
+1. **Trace the chain of events** — where did the bad input originate, and where was it used?
+2. **Map every handoff** — list each point where the work changed hands or changed form.
+3. **Add a check at each layer** — entry, mid-process, context-specific, documentation.
+4. **Test each layer** — try to bypass layer 1 and confirm layer 2 catches it. Try to bypass layer 2 and confirm layer 3 catches it.
 
-## Example from Session
+## Example from Practice
 
-Bug: Empty `projectDir` caused `git init` in source code
+Problem: a campaign launched with a target that no longer matched its audience, and missed by 60%.
 
-**Data flow:**
-1. Test setup → empty string
-2. `Project.create(name, '')`
-3. `WorkspaceManager.createWorkspace('')`
-4. `git init` runs in `process.cwd()`
+**Chain of events:**
+
+1. Kickoff asked for "more volume."
+2. Brief broadened audience but kept the original target.
+3. Media plan used the broader audience.
+4. Launch went live with a target built for a different audience.
+5. Performance was measured against the wrong number.
 
 **Four layers added:**
-- Layer 1: `Project.create()` validates not empty/exists/writable
-- Layer 2: `WorkspaceManager` validates projectDir not empty
-- Layer 3: `WorktreeManager` refuses git init outside tmpdir in tests
-- Layer 4: Stack trace logging before git init
 
-**Result:** All 1847 tests passed, bug impossible to reproduce
+- Layer 1: Briefs require audience, goal metric, target, and conversion assumption together, or they aren't accepted.
+- Layer 2: Media-plan review blocks approval if audience changed without a target update.
+- Layer 3: Launch readiness gate flags any mismatch between approved plan and live configuration.
+- Layer 4: Retros explicitly compare plan-time assumptions to launch-time reality and log deltas.
+
+**Result:** The specific failure mode became structurally difficult to reproduce. Subsequent campaigns caught audience-target drift at Layer 1 or Layer 2, long before launch.
 
 ## Key Insight
 
-All four layers were necessary. During testing, each layer caught bugs the others missed:
-- Different code paths bypassed entry validation
-- Mocks bypassed business logic checks
-- Edge cases on different platforms needed environment guards
-- Debug logging identified structural misuse
+All four layers were necessary. Over time, each layer caught something the others missed:
 
-**Don't stop at one validation point.** Add checks at every layer.
+- Different team members bypassed entry checks under time pressure.
+- New campaign types introduced edge cases that weren't covered by the mid-process check.
+- Context-specific launches (new markets, regulated verticals) needed extra guards.
+- Documentation was what let the team diagnose the cases that still slipped through.
+
+**Don't stop at one checkpoint.** Add checks at every handoff. Make the failure structurally impossible, not just currently blocked.

@@ -1,3 +1,10 @@
+// NOTE for normalpowers authors:
+// For normalpowers we prefer ASCII flowcharts in skill text — most target environments
+// (ChatGPT, Gemini, Claude chat sessions) can't render .dot graphs live. This file is kept
+// as a convention reference for skill authors who want to render graphs elsewhere (e.g., in
+// static docs, slide decks, or wikis that support Graphviz). If you're writing SKILL.md,
+// draw flowcharts as plain ASCII inside the markdown — they render everywhere.
+
 digraph STYLE_GUIDE {
     // The style guide for our process DSL, written in the DSL itself
 

@@ -1,10 +1,10 @@
 # Skill authoring best practices
 
-> Learn how to write effective Skills that Claude can discover and use successfully.
+> Anthropic's official published guidance on writing Skills, included here for reference.
+>
+> This document is kept so you can see the shape of Anthropic's recommended approach and understand where normalpowers deliberately differs. Where this guidance and normalpowers' SKILL.md conflict, follow SKILL.md — our approach has been tuned through behavioral testing rather than pure authoring theory.
 
-Good Skills are concise, well-structured, and tested with real usage. This guide provides practical authoring decisions to help you write Skills that Claude can discover and use effectively.
-
-For conceptual background on how Skills work, see the [Skills overview](/en/docs/agents-and-tools/agent-skills/overview).
+Good Skills are concise, well-structured, and tested with real usage. This guide provides practical authoring decisions to help you write Skills that models can discover and use effectively.
 
 ## Core principles
 

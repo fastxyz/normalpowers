@@ -2,168 +2,186 @@
 
 ## Overview
 
-Bugs often manifest deep in the call stack (git init in wrong directory, file created in wrong location, database opened with wrong path). Your instinct is to fix where the error appears, but that's treating a symptom.
+Problems often surface far downstream from where they actually originated. A campaign underperforms, but the real cause is in the brief written three weeks earlier. A deal stalls at negotiation, but the root cause is a qualification step skipped at discovery. A product launch lands flat, but the miss happened when positioning drifted during executive review.
 
-**Core principle:** Trace backward through the call chain until you find the original trigger, then fix at the source.
+Your instinct is to fix where the problem showed up — that's treating a symptom.
+
+**Core principle:** Trace backward through the chain of events, decisions, and handoffs until you find the original trigger, then fix at the source.
 
 ## When to Use
 
-```dot
-digraph when_to_use {
-    "Bug appears deep in stack?" [shape=diamond];
-    "Can trace backwards?" [shape=diamond];
-    "Fix at symptom point" [shape=box];
-    "Trace to original trigger" [shape=box];
-    "BETTER: Also add defense-in-depth" [shape=box];
-
-    "Bug appears deep in stack?" -> "Can trace backwards?" [label="yes"];
-    "Can trace backwards?" -> "Trace to original trigger" [label="yes"];
-    "Can trace backwards?" -> "Fix at symptom point" [label="no - dead end"];
-    "Trace to original trigger" -> "BETTER: Also add defense-in-depth";
-}
+```
+            Problem appears far
+           downstream from cause?
+                    │
+                    ▼
+            Can you trace backward
+            through the chain?
+                    │
+        ┌───────────┴───────────┐
+       yes                      no (dead end)
+        │                       │
+        ▼                       ▼
+  Trace to the original    Fix at the symptom,
+  trigger, fix there       document the gap
+        │
+        ▼
+  BETTER: also add
+  defense-in-depth
 ```
 
 **Use when:**
-- Error happens deep in execution (not at entry point)
-- Stack trace shows long call chain
-- Unclear where invalid data originated
-- Need to find which test/code triggers the problem
+
+- The visible failure is far from where the problem actually started.
+- The chain of events is long and spans multiple people or stages.
+- It's unclear where the wrong decision or wrong input first entered the system.
+- You need to identify which specific step, meeting, or choice triggered the cascade.
 
 ## The Tracing Process
 
-### 1. Observe the Symptom
-```
-Error: git init failed in /Users/jesse/project/packages/core
-```
+### 1. Observe the symptom
 
-### 2. Find Immediate Cause
-**What code directly causes this?**
-```typescript
-await execFileAsync('git', ['init'], { cwd: projectDir });
+```
+The Q3 product-led-growth campaign missed its signup target by 60%.
 ```
 
-### 3. Ask: What Called This?
-```typescript
-WorktreeManager.createSessionWorktree(projectDir, sessionId)
-  → called by Session.initializeWorkspace()
-  → called by Session.create()
-  → called by test at Project.create()
+### 2. Find the immediate cause
+
+**What directly produced the miss?**
+
+```
+Paid channels drove 40% fewer qualified signups than forecast,
+and the organic funnel converted at half the expected rate.
 ```
 
-### 4. Keep Tracing Up
-**What value was passed?**
-- `projectDir = ''` (empty string!)
-- Empty string as `cwd` resolves to `process.cwd()`
-- That's the source code directory!
+### 3. Ask: what fed into that?
 
-### 5. Find Original Trigger
-**Where did empty string come from?**
-```typescript
-const context = setupCoreTest(); // Returns { tempDir: '' }
-Project.create('name', context.tempDir); // Accessed before beforeEach!
+```
+Paid underperformance
+  ← audience targeting shifted from "SMB ops leads" to "any ops role"
+  ← change made during media-plan review
+  ← because the brief said "broaden the top of funnel"
+  ← because leadership asked for "more volume" in the kickoff
 ```
 
-## Adding Stack Traces
+### 4. Keep tracing upstream
 
-When you can't trace manually, add instrumentation:
+**What values, assumptions, or instructions were passed forward?**
 
-```typescript
-// Before the problematic operation
-async function gitInit(directory: string) {
-  const stack = new Error().stack;
-  console.error('DEBUG git init:', {
-    directory,
-    cwd: process.cwd(),
-    nodeEnv: process.env.NODE_ENV,
-    stack,
-  });
+- The original growth plan assumed SMB ops leads converted at 8%.
+- Generic ops roles historically convert at 2%.
+- Nobody re-modeled the forecast when the audience broadened.
+- The signup target was left at the original number.
 
-  await execFileAsync('git', ['init'], { cwd: directory });
-}
+### 5. Find the original trigger
+
+**Where did the mismatch first enter the chain?**
+
+```
+Kickoff meeting — leadership asked for "more volume" without
+specifying whether the existing target assumed the existing audience.
+Growth lead broadened the audience. Nobody re-ran the math.
+The stale target became the scoreboard for a different campaign.
 ```
 
-**Critical:** Use `console.error()` in tests (not logger - may not show)
+## Capturing the Chain on Paper
 
-**Run and capture:**
-```bash
-npm test 2>&1 | grep 'DEBUG git init'
+When you can't reconstruct the chain from memory, instrument it explicitly:
+
+```
+For each stage, write down:
+  - Inputs that arrived (brief, data, approval)
+  - Decisions made at this stage
+  - Outputs handed off
+  - Who signed off, and on what
+  - What assumptions were carried (and whether they still held)
 ```
 
-**Analyze stack traces:**
-- Look for test file names
-- Find the line number triggering the call
-- Identify the pattern (same test? same parameter?)
+**Critical:** write it down in one place where every stage is visible side by side. Fragments across Slack threads, email, and meeting notes hide the exact point where the chain broke.
 
-## Finding Which Test Causes Pollution
+**What you're looking for:**
 
-If something appears during tests but you don't know which test:
+- The stage where an input quietly changed meaning.
+- The stage where an assumption stopped being true but wasn't flagged.
+- The stage where a handoff lost context that the next owner needed.
 
-Use the bisection script `find-polluter.sh` in this directory:
+## Finding Which Step Introduced the Problem
 
-```bash
-./find-polluter.sh '.git' 'src/**/*.test.ts'
-```
+If something went wrong and you don't know which step in the process caused it:
 
-Runs tests one-by-one, stops at first polluter. See script for usage.
+1. List every step in the process in order.
+2. Walk the chain one step at a time: at this step, was the input still correct? Was the output still correct?
+3. Stop at the first step where the output diverged from what later stages assumed.
 
-## Real Example: Empty projectDir
+That's your polluting step. The fix belongs there, not further downstream.
 
-**Symptom:** `.git` created in `packages/core/` (source code)
+## Real Example: Campaign Miss
+
+**Symptom:** Q3 PLG campaign missed signup target by 60%.
 
 **Trace chain:**
-1. `git init` runs in `process.cwd()` ← empty cwd parameter
-2. WorktreeManager called with empty projectDir
-3. Session.create() passed empty string
-4. Test accessed `context.tempDir` before beforeEach
-5. setupCoreTest() returns `{ tempDir: '' }` initially
 
-**Root cause:** Top-level variable initialization accessing empty value
+1. Paid channels underperformed.
+2. Audience broadened during media-plan review.
+3. Brief said "broaden top of funnel."
+4. Kickoff said "more volume."
+5. Target was never re-modeled when audience changed.
 
-**Fix:** Made tempDir a getter that throws if accessed before beforeEach
+**Root cause:** The target was set against the old audience assumption and never updated when the audience shifted. The campaign was measured against a number that no longer matched its design.
+
+**Fix at the source:** Require forecast re-modeling whenever audience definition changes in the media-plan review stage.
 
 **Also added defense-in-depth:**
-- Layer 1: Project.create() validates directory
-- Layer 2: WorkspaceManager validates not empty
-- Layer 3: NODE_ENV guard refuses git init outside tmpdir
-- Layer 4: Stack trace logging before git init
+
+- Layer 1: Kickoff template requires audience definition and associated conversion assumption to be named together.
+- Layer 2: Media-plan review checklist blocks sign-off if audience changed without target update.
+- Layer 3: Launch readiness gate flags when the live target doesn't match the current forecast.
+- Layer 4: Post-launch retros explicitly compare plan-time assumptions to launch-time reality.
 
 ## Key Principle
 
-```dot
-digraph principle {
-    "Found immediate cause" [shape=ellipse];
-    "Can trace one level up?" [shape=diamond];
-    "Trace backwards" [shape=box];
-    "Is this the source?" [shape=diamond];
-    "Fix at source" [shape=box];
-    "Add validation at each layer" [shape=box];
-    "Bug impossible" [shape=doublecircle];
-    "NEVER fix just the symptom" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];
-
-    "Found immediate cause" -> "Can trace one level up?";
-    "Can trace one level up?" -> "Trace backwards" [label="yes"];
-    "Can trace one level up?" -> "NEVER fix just the symptom" [label="no"];
-    "Trace backwards" -> "Is this the source?";
-    "Is this the source?" -> "Trace backwards" [label="no - keeps going"];
-    "Is this the source?" -> "Fix at source" [label="yes"];
-    "Fix at source" -> "Add validation at each layer";
-    "Add validation at each layer" -> "Bug impossible";
-}
+```
+        Found the immediate
+        cause of the problem
+                │
+                ▼
+        Can you trace one
+        level further upstream?
+                │
+        ┌───────┴───────┐
+       yes              no
+        │               │
+        ▼               ▼
+   Trace backward   NEVER fix only
+        │          the symptom —
+        ▼          document the gap
+   Is this the
+   source?
+        │
+   ┌────┴────┐
+   no       yes
+   │         │
+   └─► loop  ▼
+         Fix at the source
+                │
+                ▼
+        Add checks at each
+        handoff (defense-in-depth)
+                │
+                ▼
+        Problem becomes
+        structurally impossible
 ```
 
-**NEVER fix just where the error appears.** Trace back to find the original trigger.
+**NEVER fix only where the problem showed up.** Trace back to find the original trigger.
 
-## Stack Trace Tips
+## Tracing Tips
 
-**In tests:** Use `console.error()` not logger - logger may be suppressed
-**Before operation:** Log before the dangerous operation, not after it fails
-**Include context:** Directory, cwd, environment variables, timestamps
-**Capture stack:** `new Error().stack` shows complete call chain
+- **In meetings and retros:** ask "what were we assuming at the previous stage?" at every level.
+- **Before a blame conversation:** reconstruct the chain first — problems that look like individual failures are usually handoff failures.
+- **Include context:** what was the brief, what was approved, what was said verbally versus written down, what changed between stages.
+- **Capture the chain:** write every stage out in order so you can see the whole sequence at once.
 
 ## Real-World Impact
 
-From debugging session (2025-10-03):
-- Found root cause through 5-level trace
-- Fixed at source (getter validation)
-- Added 4 layers of defense
-- 1847 tests passed, zero pollution
+A trace through five stages (kickoff → brief → media plan → launch → measurement) usually takes an hour and surfaces a single upstream cause that, once fixed, prevents an entire class of repeat problems. Patching only the downstream symptom ships the same failure the next quarter in a different disguise.

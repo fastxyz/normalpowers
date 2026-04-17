@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always
+description: Use before claiming any work is done, delivered, fixed, or landed — requires gathering external evidence that the outcome actually occurred, not relying on internal belief that it should have.
 ---
 
 # Verification Before Completion
@@ -11,129 +11,170 @@ Claiming work is complete without verification is dishonesty, not efficiency.
 
 **Core principle:** Evidence before claims, always.
 
+Internal belief that something worked is not evidence. The deck feels clear to you; the memo reads well to you; the process change looks adopted to you — none of that is external evidence that the stakeholder got an answer, the reader understood, or the team changed behavior. Go look.
+
 **Violating the letter of this rule is violating the spirit of this rule.**
 
 ## The Iron Law
 
 ```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+NO COMPLETION CLAIMS WITHOUT FRESH EXTERNAL EVIDENCE
 ```
 
-If you haven't run the verification command in this message, you cannot claim it passes.
+If you haven't confirmed it against the real world in this exchange, you cannot claim it is done.
 
 ## The Gate Function
 
 ```
 BEFORE claiming any status or expressing satisfaction:
 
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
-3. READ: Full output, check exit code, count failures
-4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
+1. IDENTIFY: What observation would prove this claim?
+2. GATHER: Go get that observation (ask the person, read the doc,
+           check the metric, look at the reply, watch the meeting).
+3. READ: Full evidence, not a snippet. What does it actually say?
+4. VERIFY: Does the evidence confirm the claim?
+   - If NO: State the actual status with evidence.
+   - If YES: State the claim WITH the evidence.
+5. ONLY THEN: Make the claim.
 
-Skip any step = lying, not verifying
+Skip any step = lying, not verifying.
 ```
 
 ## Common Failures
 
 | Claim | Requires | Not Sufficient |
 |-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
-| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
-| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
-| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
-| Regression test works | Red-green cycle verified | Test passes once |
-| Agent completed | VCS diff shows changes | Agent reports "success" |
-| Requirements met | Line-by-line checklist | Tests passing |
+| Deck answers the stakeholder's question | Stakeholder confirms in their own words | "It addresses the brief" |
+| Memo was understood | Reader restates the key decision | "It's well written" |
+| Process change landed with the team | Observed behavior in the next cycle | Announcement sent |
+| Metric moved | Fresh pull of the metric | "The change should lift it" |
+| Candidate accepted the offer | Signed offer in hand | Verbal "I'm excited" |
+| Email addresses the reader's objection | The actual objection from the reader | The objection you imagined |
+| Requirements met | Line-by-line checklist against the brief | General sense of done |
+| Decision is approved | Approver said yes, in writing if that's the norm | Silence after you sent it |
 
-## Red Flags - STOP
+## Red Flags — STOP
 
 - Using "should", "probably", "seems to"
 - Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
-- About to commit/push/PR without verification
-- Trusting agent success reports
-- Relying on partial verification
+- About to send, publish, or announce without checking the thing exists and says what you think
+- Trusting a secondhand report ("someone said it went well") as evidence
+- Relying on partial verification (one reply from one person ≠ the whole audience aligned)
 - Thinking "just this once"
 - Tired and wanting work over
-- **ANY wording implying success without having run verification**
+- **ANY wording implying success without having gathered evidence**
 
 ## Rationalization Prevention
 
 | Excuse | Reality |
 |--------|---------|
-| "Should work now" | RUN the verification |
-| "I'm confident" | Confidence ≠ evidence |
+| "Should work now" | Go verify it |
+| "I'm confident" | Confidence is not evidence |
 | "Just this once" | No exceptions |
-| "Linter passed" | Linter ≠ compiler |
-| "Agent said success" | Verify independently |
-| "I'm tired" | Exhaustion ≠ excuse |
-| "Partial check is enough" | Partial proves nothing |
-| "Different words so rule doesn't apply" | Spirit over letter |
+| "It reads well to me" | You wrote it; of course it does. Ask the reader. |
+| "Someone told me it was fine" | Verify with the actual person of record |
+| "I'm tired" | Exhaustion is not an excuse |
+| "Partial check is enough" | Partial proves nothing about the whole |
+| "Different words so the rule doesn't apply" | Spirit over letter |
 
 ## Key Patterns
 
-**Tests:**
+**Did the deliverable answer the real question?**
+
 ```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
+OK:  Share draft with stakeholder → they restate what they now know →
+     it matches the question they originally asked → "Answered."
+NOT: "The deck covers the topic." / "It reads well."
 ```
 
-**Regression tests (TDD Red-Green):**
+**Did the reader actually understand?**
+
 ```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
+OK:  Ask the reader to restate the decision/ask in their own words →
+     it matches → "Understood."
+NOT: "The memo is clear." (to you)
 ```
 
-**Build:**
+**Did the process change land with the team?**
+
 ```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
+OK:  Observe the next cycle → the new behavior shows up → "Adopted."
+NOT: "I sent the announcement and nobody objected."
+```
+
+**Did the metric move?**
+
+```
+OK:  Pull the metric after the change has had time to take effect →
+     compare to baseline → "Moved from X to Y."
+NOT: "The change should lift it."
+```
+
+**Is the hire accepted?**
+
+```
+OK:  Signed offer in writing → "Accepted."
+NOT: "They sounded excited on the call."
+```
+
+**Does the email address the actual objection?**
+
+```
+OK:  Name the objection the reader actually raised → point to the
+     line in the draft that answers it → "Addressed."
+NOT: "I covered the concerns I imagined they'd have."
 ```
 
 **Requirements:**
+
 ```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
-❌ "Tests pass, phase complete"
+OK:  Re-read the brief → checklist each requirement → verify each
+     against the deliverable → report gaps or completion.
+NOT: "Feels comprehensive."
 ```
 
-**Agent delegation:**
+**Delegation:**
+
 ```
-✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
-❌ Trust agent report
+OK:  Person reports they did the thing → you check the artifact
+     (the sent email, the updated doc, the calendar hold, the
+     spreadsheet row) → "Confirmed."
+NOT: Trust the report without looking.
 ```
 
 ## Why This Matters
 
-From 24 failure memories:
-- your human partner said "I don't believe you" - trust broken
-- Undefined functions shipped - would crash
-- Missing requirements shipped - incomplete features
-- Time wasted on false completion → redirect → rework
-- Violates: "Honesty is a core value. If you lie, you'll be replaced."
+- Trust is the only currency. Once a partner hears "it's done" and finds it isn't, every future claim is discounted.
+- False completion claims send the work to the next phase uncooked. Someone downstream then discovers the gap, and the rework costs more than the original verification would have.
+- "I don't believe you" is a terminal state. Avoid it by never spending credibility on unverified claims.
 
 ## When To Apply
 
 **ALWAYS before:**
+
 - ANY variation of success/completion claims
 - ANY expression of satisfaction
 - ANY positive statement about work state
-- Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
+- Sending, publishing, announcing, scheduling
+- Moving to the next task
+- Reporting status upward
+- Handing work off
 
 **Rule applies to:**
+
 - Exact phrases
 - Paraphrases and synonyms
 - Implications of success
-- ANY communication suggesting completion/correctness
+- ANY communication suggesting completion or correctness
+
+## Relationship To Other Skills
+
+Referenced by `systematic-problem-solving` — once you believe you have the fix, verification-before-completion is what turns that belief into a claim.
 
 ## The Bottom Line
 
 **No shortcuts for verification.**
 
-Run the command. Read the output. THEN claim the result.
+Gather the evidence. Read it. THEN claim the result.
 
 This is non-negotiable.
