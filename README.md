@@ -6,7 +6,7 @@ normalpowers is a portable prompt bundle that turns ChatGPT, Gemini, or any flav
 
 Works on any LLM — paste the master prompt and go. Claude Code users can install in one command.
 
-**[Download v0.1.0](https://github.com/fastxyz/normalpowers/releases/tag/v0.1.0)** — [`.zip` (Claude.ai Projects)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip) · [`.plugin` (Claude Code)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin) · [`.skill`](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill)
+[![release](https://img.shields.io/github/v/release/fastxyz/normalpowers?style=flat-square&label=release&color=555)](https://github.com/fastxyz/normalpowers/releases/latest) [![claude.ai](https://img.shields.io/badge/claude.ai-.zip-0EA5E9?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip) [![claude code](https://img.shields.io/badge/claude%20code-.plugin-7C3AED?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin) [![skill platforms](https://img.shields.io/badge/skill%20platforms-.skill-16A34A?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill)
 
 ---
 
