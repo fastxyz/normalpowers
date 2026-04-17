@@ -51,6 +51,20 @@ Copy `normalpowers.md` from this repo. Paste it into whichever platform you use.
 
 Install guide priority: Claude first (it's our internal stack), then ChatGPT and Gemini.
 
+### Claude Code — one-click install
+
+```bash
+/plugin install normalpowers@fastxyz
+```
+
+Or download `normalpowers-vX.Y.Z.plugin` from [Releases](https://github.com/fastxyz/normalpowers/releases/latest) for a local offline install:
+
+```bash
+/plugin install ./normalpowers-vX.Y.Z.plugin
+```
+
+For skill-compatible platforms, download `normalpowers-vX.Y.Z.skill` from Releases.
+
 ### Claude.ai — Projects (recommended)
 
 1. Open [claude.ai](https://claude.ai) → **Projects** → **New project**.

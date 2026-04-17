@@ -7,6 +7,8 @@ This file is the repository-level guide for humans and AI agents working in this
 ## What's In Here
 
 ```
+.claude-plugin/         plugin manifest for `/plugin install normalpowers@fastxyz`
+hooks/                  session-start hook — injects normalpowers.md at Claude Code session start
 skills/                 plain-markdown skill files — the product
 normalpowers.md         the master prompt (paste-as-system-prompt)
 README.md               what it is + per-platform install
@@ -49,7 +51,7 @@ Before modifying anything in `skills/`:
 
 These get closed without review:
 
-- **Platform-specific integrations** (plugin manifests, hooks, custom tool wiring). Push those to a fork — not core.
+- **New platform integrations** beyond the existing Claude Code plugin manifest. We ship one — `/plugin install normalpowers@fastxyz` via `.claude-plugin/` + `hooks/`. Adding Cursor, Codex, or others requires a design doc and maintainer approval.
 - **Domain-specific skills** (sales-discovery, specific-industry-workflows). Use `writing-skills` to author them in your own bundle.
 - **"Compliance" rewrites** restructuring skills to match some external style guide without eval evidence that behavior improved.
 - **Rebrands, rewording sweeps, or tone-unification PRs** without a specific behavioral problem they solve.

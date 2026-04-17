@@ -41,6 +41,8 @@ normalpowers has none of that. It is plain markdown by design:
 
 This is a deliberate scope constraint. Portability across every LLM front-end beats deeper integration with one of them.
 
+normalpowers does ship a `.claude-plugin/` manifest and a `hooks/session-start` script so that Claude Code users can do `/plugin install normalpowers@fastxyz` for a one-click install. The hook injects `normalpowers.md` at session start — no Skill tool, no subagents. The skills remain plain markdown and work identically on every other platform.
+
 ## Recommendation
 
 **If you are writing software, use [superpowers](https://github.com/obra/superpowers).** It is tuned for that work and sharper on that axis than anything we could offer. The TDD and subagent skills in particular have no substitute here.
