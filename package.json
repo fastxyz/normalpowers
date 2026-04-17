@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A portable prompt bundle that turns any LLM into a patient interviewer who asks the right questions. Fork of obra/superpowers, adapted for generalist knowledge workers.",
   "license": "MIT",
-  "author": "Ovidiu Damian <ovidiu@fast.xyz>",
+  "author": "Pi Squared Inc.",
   "homepage": "https://github.com/fastxyz/normalpowers",
   "repository": {
     "type": "git",
