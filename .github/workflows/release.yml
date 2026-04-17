@@ -17,8 +17,13 @@ jobs:
           chmod +x scripts/build-release.sh
           ./scripts/build-release.sh
 
-      - name: Upload zip to release
+      - name: Upload release artifacts
         env:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ github.event.release.tag_name }}
-        run: gh release upload "$TAG_NAME" dist/normalpowers-v*.zip --clobber
+        run: |
+          gh release upload "$TAG_NAME" \
+            dist/normalpowers-v*.zip \
+            dist/normalpowers-v*.plugin \
+            dist/normalpowers-v*.skill \
+            --clobber
