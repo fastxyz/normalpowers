@@ -3,20 +3,20 @@ set -euo pipefail
 
 VERSION=$(node -e "console.log(require('./package.json').version)")
 DIST_DIR="dist"
-STAGING_DIR="$(mktemp -d)"
-ZIP_NAME="normalpowers-v${VERSION}.zip"
-
-echo "Building ${ZIP_NAME}..."
-
-# Clean prior build
 mkdir -p "${DIST_DIR}"
-rm -f "${DIST_DIR}/normalpowers-v"*.zip
 
-# Copy skills/, excluding graphviz-conventions.dot
-rsync -a --exclude="graphviz-conventions.dot" skills/ "${STAGING_DIR}/skills/"
+# ── zip ──────────────────────────────────────────────────────────────────────
+build_zip() {
+  local ZIP_NAME="normalpowers-v${VERSION}.zip"
+  local STAGING
+  STAGING="$(mktemp -d)"
 
-# Write INDEX.md — LLM-facing instructions uploaded alongside the skills
-cat > "${STAGING_DIR}/INDEX.md" << 'INDEXEOF'
+  echo "Building ${ZIP_NAME}..."
+  rm -f "${DIST_DIR}/normalpowers-v"*.zip
+
+  rsync -a --exclude="graphviz-conventions.dot" --exclude="normalpowers.skill.md" skills/ "${STAGING}/skills/"
+
+  cat > "${STAGING}/INDEX.md" << 'INDEXEOF'
 # normalpowers — knowledge bundle index
 
 You have the normalpowers skill bundle loaded as knowledge. Here is how to navigate it.
@@ -53,17 +53,74 @@ parent skill instructs you to.
 - `skills/writing-skills/persuasion-principles.md` — referenced by `writing-skills`
 INDEXEOF
 
-# Zip the staging directory
-cd "${STAGING_DIR}"
-zip -r "${OLDPWD}/${DIST_DIR}/${ZIP_NAME}" .
-cd "${OLDPWD}"
+  (cd "${STAGING}" && zip -r "${OLDPWD}/${DIST_DIR}/${ZIP_NAME}" .)
+  rm -rf "${STAGING}"
 
-# Clean up staging
-rm -rf "${STAGING_DIR}"
+  echo "Contents of ${DIST_DIR}/${ZIP_NAME}:"
+  unzip -l "${DIST_DIR}/${ZIP_NAME}"
+}
 
-# Print manifest so maintainer can verify before releasing
+# ── plugin ───────────────────────────────────────────────────────────────────
+build_plugin() {
+  local PLUGIN_NAME="normalpowers-v${VERSION}.plugin"
+  local STAGING
+  STAGING="$(mktemp -d)"
+
+  echo "Building ${PLUGIN_NAME}..."
+  rm -f "${DIST_DIR}/normalpowers-v"*.plugin
+
+  cp .claude-plugin/plugin.json "${STAGING}/plugin.json"
+  rsync -a hooks/ "${STAGING}/hooks/"
+  rsync -a --exclude="graphviz-conventions.dot" --exclude="normalpowers.skill.md" skills/ "${STAGING}/skills/"
+  cp normalpowers.md "${STAGING}/normalpowers.md"
+
+  (cd "${STAGING}" && zip -r "${OLDPWD}/${DIST_DIR}/${PLUGIN_NAME}" .)
+  rm -rf "${STAGING}"
+
+  echo "Contents of ${DIST_DIR}/${PLUGIN_NAME}:"
+  unzip -l "${DIST_DIR}/${PLUGIN_NAME}"
+}
+
+# ── skill ────────────────────────────────────────────────────────────────────
+build_skill() {
+  local SKILL_NAME="normalpowers-v${VERSION}.skill"
+  local STAGING
+  STAGING="$(mktemp -d)"
+
+  echo "Building ${SKILL_NAME}..."
+  rm -f "${DIST_DIR}/normalpowers-v"*.skill
+
+  # The one SKILL.md — purpose-built entry point
+  cp skills/normalpowers.skill.md "${STAGING}/SKILL.md"
+
+  # Flatten each skill's SKILL.md as <skill-name>.md
+  for dir in skills/*/; do
+    local skill_name
+    skill_name="$(basename "${dir}")"
+    if [ -f "${dir}SKILL.md" ]; then
+      cp "${dir}SKILL.md" "${STAGING}/${skill_name}.md"
+    fi
+  done
+
+  # Support docs flat
+  cp skills/systematic-problem-solving/root-cause-tracing.md "${STAGING}/root-cause-tracing.md"
+  cp skills/systematic-problem-solving/defense-in-depth.md "${STAGING}/defense-in-depth.md"
+  cp skills/writing-skills/anthropic-best-practices.md "${STAGING}/anthropic-best-practices.md"
+  cp skills/writing-skills/persuasion-principles.md "${STAGING}/persuasion-principles.md"
+
+  (cd "${STAGING}" && zip -r "${OLDPWD}/${DIST_DIR}/${SKILL_NAME}" .)
+  rm -rf "${STAGING}"
+
+  echo "Contents of ${DIST_DIR}/${SKILL_NAME}:"
+  unzip -l "${DIST_DIR}/${SKILL_NAME}"
+}
+
+# ── main ─────────────────────────────────────────────────────────────────────
+build_zip
 echo ""
-echo "Contents of ${DIST_DIR}/${ZIP_NAME}:"
-unzip -l "${DIST_DIR}/${ZIP_NAME}"
+build_plugin
 echo ""
-echo "Done: ${DIST_DIR}/${ZIP_NAME}"
+build_skill
+echo ""
+echo "Done. All artifacts in ${DIST_DIR}/:"
+ls -lh "${DIST_DIR}/normalpowers-v"*
