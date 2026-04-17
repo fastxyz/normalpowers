@@ -57,19 +57,19 @@ Install guide priority: Claude first (it's our internal stack), then ChatGPT and
 /plugin install normalpowers@fastxyz
 ```
 
-Or download `normalpowers-vX.Y.Z.plugin` from [Releases](https://github.com/fastxyz/normalpowers/releases/latest) for a local offline install:
+Or download [`normalpowers-v0.1.0.plugin`](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin) for a local offline install:
 
 ```bash
-/plugin install ./normalpowers-vX.Y.Z.plugin
+/plugin install ./normalpowers-v0.1.0.plugin
 ```
 
-For skill-compatible platforms, download `normalpowers-vX.Y.Z.skill` from Releases.
+For skill-compatible platforms, download [`normalpowers-v0.1.0.skill`](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill).
 
 ### Claude.ai — Projects (recommended)
 
 1. Open [claude.ai](https://claude.ai) → **Projects** → **New project**.
 2. In the project's **Custom instructions** field, paste the full contents of [`normalpowers.md`](normalpowers.md).
-3. (Optional, improves behavior) Download the latest [`normalpowers-vX.Y.Z.zip`](https://github.com/fastxyz/normalpowers/releases/latest) from Releases, extract it, and drag the extracted folder into the project's knowledge section. Or upload the individual `skills/*/SKILL.md` files from GitHub if you prefer.
+3. (Optional, improves behavior) Download [`normalpowers-v0.1.0.zip`](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip), extract it, and drag the extracted folder into the project's knowledge section. Or upload the individual `skills/*/SKILL.md` files from GitHub if you prefer.
 4. Start a chat in the project. Say *"I want to plan a hackathon"* — Claude should enter brainstorming mode, asking one question at a time, rather than jumping to a plan.
 
 ### Claude.ai — Free tier (no Projects)
