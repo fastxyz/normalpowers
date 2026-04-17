@@ -1,6 +1,23 @@
 {
-  "name": "superpowers",
-  "version": "5.0.7",
-  "type": "module",
-  "main": ".opencode/plugins/superpowers.js"
+  "name": "normalpowers",
+  "version": "0.1.0",
+  "description": "A portable prompt bundle that turns any LLM into a patient interviewer who asks the right questions. Fork of obra/superpowers, adapted for generalist knowledge workers.",
+  "license": "MIT",
+  "author": "Ovidiu Damian <ovidiu@fast.xyz>",
+  "homepage": "https://github.com/fastxyz/normalpowers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fastxyz/normalpowers.git"
+  },
+  "bugs": "https://github.com/fastxyz/normalpowers/issues",
+  "keywords": [
+    "llm",
+    "prompt-engineering",
+    "knowledge-work",
+    "interview",
+    "brainstorming",
+    "claude",
+    "chatgpt",
+    "gemini"
+  ]
 }

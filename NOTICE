@@ -1,0 +1,29 @@
+normalpowers
+============
+
+normalpowers is a derivative work of superpowers
+(https://github.com/obra/superpowers) by Jesse Vincent, licensed under MIT.
+
+We are deeply grateful to Jesse and everyone who contributed to superpowers.
+The interview-style thinking skills — brainstorming, writing-plans,
+systematic problem-solving, verification-before-completion, receiving
+feedback, and writing-skills — originated in superpowers and carry its DNA.
+
+What differs:
+
+  - superpowers is a Claude Code / Cursor / Codex / OpenCode / Gemini CLI
+    plugin tuned for software engineering.
+  - normalpowers is a portable markdown prompt bundle tuned for generalist
+    knowledge workers. It drops all plugin machinery, hooks, subagent
+    dispatch, git-worktree and test-suite assumptions, and works on any LLM
+    that accepts a system prompt (Claude.ai, ChatGPT, Gemini, Claude API,
+    etc.).
+
+Software-specific skills were removed in the fork's initial cleanup; the
+remaining skills were rewritten with knowledge-work examples in place of
+code examples. See docs/comparison-to-superpowers.md for the full diff in
+intent.
+
+Upstream remains the source of truth for new philosophy; we track it at
+https://github.com/obra/superpowers and cherry-pick selectively. See
+docs/upstream-sync.md for the process.
