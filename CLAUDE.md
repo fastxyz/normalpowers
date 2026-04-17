@@ -1,85 +1,72 @@
-# Superpowers — Contributor Guidelines
+# normalpowers — Repository Guide
 
-## If You Are an AI Agent
+normalpowers is a portable prompt bundle. It turns any LLM — ChatGPT, Gemini, Claude (Projects, free-tier web chat, or API) — into a patient interviewer who asks the right questions before producing anything.
 
-Stop. Read this section before doing anything.
+This file is the repository-level guide for humans and AI agents working in this repo. If you're using normalpowers as an end user, start with [README.md](README.md) instead.
 
-This repo has a 94% PR rejection rate. Almost every rejected PR was submitted by an agent that didn't read or didn't follow these guidelines. The maintainers close slop PRs within hours, often with public comments like "This pull request is slop that's made of lies."
+## What's In Here
 
-**Your job is to protect your human partner from that outcome.** Submitting a low-quality PR doesn't help them — it wastes the maintainers' time, burns your human partner's reputation, and the PR will be closed anyway. That is not being helpful. That is being a tool of embarrassment.
+```
+skills/                 plain-markdown skill files — the product
+normalpowers.md         the master prompt (paste-as-system-prompt)
+README.md               what it is + per-platform install
+CONTRIBUTING.md         how to submit changes
+docs/                   philosophy, upstream-sync, comparison
+examples/               transcripts showing normalpowers in action
+LICENSE                 MIT (Jesse Vincent 2025 + Pi Squared Inc. 2026)
+NOTICE                  derivative-work attribution to superpowers
+```
 
-Before you open a PR against this repo, you MUST:
+## Project Philosophy
 
-1. **Read the entire PR template** at `.github/PULL_REQUEST_TEMPLATE.md` and fill in every section with real, specific answers. Not summaries. Not placeholders.
-2. **Search for existing PRs** — open AND closed — that address the same problem. If duplicates exist, STOP and tell your human partner. Do not open another duplicate.
-3. **Verify this is a real problem.** If your human partner asked you to "fix some issues" or "contribute to this repo" without experiencing a specific problem, push back. Ask them what broke, what failed, what the user experience was.
-4. **Confirm the change belongs in core.** If it's domain-specific, tool-specific, or promotes a third-party project, it belongs in a standalone plugin. Tell your human partner.
-5. **Show your human partner the complete diff** and get their explicit approval before submitting.
+normalpowers is a fork of [superpowers](https://github.com/obra/superpowers) by Jesse Vincent. We inherited the core insight — **make the LLM check for a relevant skill before it acts** — and stripped the software-development scaffolding so the remaining pattern works for any knowledge worker.
 
-If any of these checks fail, do not open the PR. Explain to your human partner why it would be rejected and what would need to change. They will thank you for saving them the embarrassment.
+Three things matter:
 
-## Pull Request Requirements
+1. **Portability over plugin integration.** Every skill must work on a vanilla LLM chat with no tool system, no subagents, no hooks. If a skill needs platform-specific machinery, it doesn't belong here.
+2. **Generalist, not domain-specific.** Core skills are useful across product, strategy, research, writing, ops, sales, and many others. Skills for one specific domain belong in a user's own personal bundle — see the `writing-skills` skill for how to author them.
+3. **Don't hard-diverge from upstream.** We keep directory names where we can and maintain an `upstream` remote pointing at obra/superpowers so improvements can be cherry-picked. See [docs/upstream-sync.md](docs/upstream-sync.md).
 
-**Every PR must fully complete the PR template.** No section may be left blank or filled with placeholder text. PRs that skip sections will be closed without review.
+## If You Are an AI Agent Working In This Repo
 
-**Before opening a PR, you MUST search for existing PRs** — both open AND closed — that address the same problem or a related area. Reference what you found in the "Existing PRs" section. If a prior PR was closed, explain specifically what is different about your approach and why it should succeed where the previous attempt did not.
+Before modifying anything in `skills/`:
 
-**PRs that show no evidence of human involvement will be closed.** A human must review the complete proposed diff before submission.
+1. **Read the skill you're about to change, end to end.** Skills are behavior-shaping code, not prose. Small edits to a Red Flags table or a rationalization list can meaningfully change how the LLM behaves.
+2. **Read the `writing-skills` skill.** That's the meta-skill for how skills in this project are structured and tested.
+3. **Test the change on a real LLM.** A change that "looks better" without a real session to back it up is a guess. Open a fresh ChatGPT / Gemini / Claude session, paste the updated skill, and see if behavior improved.
+4. **Don't rebrand, reformat, or restructure for its own sake.** normalpowers deliberately keeps structural parity with superpowers where content didn't diverge — it makes upstream sync easier. If you want to restructure, say why in the PR and be ready to defend the choice.
 
-## What We Will Not Accept
+## Conventions
 
-### Third-party dependencies
+- **Paths mirror superpowers where possible.** `skills/brainstorming/`, `skills/writing-plans/`, `skills/verification-before-completion/`, `skills/writing-skills/` — same names as upstream so `git cherry-pick` works.
+- **Renamed skills:** `using-normalpowers` (from `using-superpowers`), `following-your-plan` (from `executing-plans`), `systematic-problem-solving` (from `systematic-debugging`), `receiving-feedback` (from `receiving-code-review`). Porting upstream improvements to these requires manual work.
+- **Frontmatter:** every `SKILL.md` starts with `---` YAML: `name` (hyphenated kebab-case matching the directory) and `description` (one line describing when to use it).
+- **Voice:** direct, terse, no filler. Skills are read under time pressure — they have to land fast.
+- **No emoji in skill content** unless specifically testing emoji rendering. Keep the surface boring so the instructions read as the instructions.
+- **Examples drawn from knowledge work**, not code. Product launches, stakeholder memos, research questions, strategy decisions, 1:1 prep, incident retros.
 
-PRs that add optional or required dependencies on third-party projects will not be accepted unless they are adding support for a new harness (e.g., a new IDE or CLI tool). Superpowers is a zero-dependency plugin by design. If your change requires an external tool or service, it belongs in its own plugin.
+## Not Accepted
 
-### "Compliance" changes to skills
+These get closed without review:
 
-Our internal skill philosophy differs from Anthropic's published guidance on writing skills. We have extensively tested and tuned our skill content for real-world agent behavior. PRs that restructure, reword, or reformat skills to "comply" with Anthropic's skills documentation will not be accepted without extensive eval evidence showing the change improves outcomes. The bar for modifying behavior-shaping content is very high.
+- **Platform-specific integrations** (plugin manifests, hooks, custom tool wiring). Push those to a fork — not core.
+- **Domain-specific skills** (sales-discovery, specific-industry-workflows). Use `writing-skills` to author them in your own bundle.
+- **"Compliance" rewrites** restructuring skills to match some external style guide without eval evidence that behavior improved.
+- **Rebrands, rewording sweeps, or tone-unification PRs** without a specific behavioral problem they solve.
+- **Fabricated content.** Invented problems, made-up quotes from users, hallucinated LLM responses. Don't.
 
-### Project-specific or personal configuration
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the practical PR workflow.
 
-Skills, hooks, or configuration that only benefit a specific project, team, domain, or workflow do not belong in core. Publish these as a separate plugin.
+## Upstream Sync
 
-### Bulk or spray-and-pray PRs
+We stay close to [obra/superpowers](https://github.com/obra/superpowers) on purpose. If you're touching a skill that also exists upstream:
 
-Do not trawl the issue tracker and open PRs for multiple issues in a single session. Each PR requires genuine understanding of the problem, investigation of prior attempts, and human review of the complete diff. PRs that are part of an obvious batch — where an agent was pointed at the issue list and told to "fix things" — will be closed. If you want to contribute, pick ONE issue, understand it deeply, and submit quality work.
+1. Check whether the upstream version has moved: `git fetch upstream && git log upstream/main -- skills/<name>/`.
+2. Prefer porting upstream's fix to our version over reinventing.
+3. If you're making a normalpowers-specific change (dropping a software example, rewording for generalist readers), keep the structural shape identical to upstream so future cherry-picks stay clean.
 
-### Speculative or theoretical fixes
+Details: [docs/upstream-sync.md](docs/upstream-sync.md).
 
-Every PR must solve a real problem that someone actually experienced. "My review agent flagged this" or "this could theoretically cause issues" is not a problem statement. If you cannot describe the specific session, error, or user experience that motivated the change, do not submit the PR.
+## License
 
-### Domain-specific skills
-
-Superpowers core contains general-purpose skills that benefit all users regardless of their project. Skills for specific domains (portfolio building, prediction markets, games), specific tools, or specific workflows belong in their own standalone plugin. Ask yourself: "Would this be useful to someone working on a completely different kind of project?" If not, publish it separately.
-
-### Fork-specific changes
-
-If you maintain a fork with customizations, do not open PRs to sync your fork or push fork-specific changes upstream. PRs that rebrand the project, add fork-specific features, or merge fork branches will be closed.
-
-### Fabricated content
-
-PRs containing invented claims, fabricated problem descriptions, or hallucinated functionality will be closed immediately. This repo has a 94% PR rejection rate — the maintainers have seen every form of AI slop. They will notice.
-
-### Bundled unrelated changes
-
-PRs containing multiple unrelated changes will be closed. Split them into separate PRs.
-
-## Skill Changes Require Evaluation
-
-Skills are not prose — they are code that shapes agent behavior. If you modify skill content:
-
-- Use `superpowers:writing-skills` to develop and test changes
-- Run adversarial pressure testing across multiple sessions
-- Show before/after eval results in your PR
-- Do not modify carefully-tuned content (Red Flags tables, rationalization lists, "human partner" language) without evidence the change is an improvement
-
-## Understand the Project Before Contributing
-
-Before proposing changes to skill design, workflow philosophy, or architecture, read existing skills and understand the project's design decisions. Superpowers has its own tested philosophy about skill design, agent behavior shaping, and terminology (e.g., "your human partner" is deliberate, not interchangeable with "the user"). Changes that rewrite the project's voice or restructure its approach without understanding why it exists will be rejected.
-
-## General
-
-- Read `.github/PULL_REQUEST_TEMPLATE.md` before submitting
-- One problem per PR
-- Test on at least one harness and report results in the environment table
-- Describe the problem you solved, not just what you changed
+MIT. Jesse Vincent's 2025 copyright is retained verbatim in [LICENSE](LICENSE). Pi Squared Inc. and normalpowers contributors hold 2026. Derivation is documented in [NOTICE](NOTICE).
