@@ -1,3 +1,10 @@
+<p align="center">
+  <a href="https://github.com/fastxyz/normalpowers/releases/latest"><img src="https://img.shields.io/github/v/release/fastxyz/normalpowers?style=flat-square&label=release&color=555" alt="release"></a>
+  <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip"><img src="https://img.shields.io/badge/claude.ai-.zip-0EA5E9?style=flat-square" alt="claude.ai .zip"></a>
+  <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin"><img src="https://img.shields.io/badge/claude%20code-.plugin-7C3AED?style=flat-square" alt="claude code .plugin"></a>
+  <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill"><img src="https://img.shields.io/badge/skill%20platforms-.skill-16A34A?style=flat-square" alt=".skill"></a>
+</p>
+
 # normalpowers
 
 **Give any LLM the power to ask the right question.**
@@ -5,8 +12,6 @@
 normalpowers is a portable prompt bundle that turns ChatGPT, Gemini, or any flavor of Claude into a patient interviewer who asks the right questions, surfaces unexamined assumptions, and walks you through rigorous thinking on any knowledge-work problem.
 
 Works on any LLM — paste the master prompt and go. Claude Code users can install in one command.
-
-[![release](https://img.shields.io/github/v/release/fastxyz/normalpowers?style=flat-square&label=release&color=555)](https://github.com/fastxyz/normalpowers/releases/latest) [![claude.ai](https://img.shields.io/badge/claude.ai-.zip-0EA5E9?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip) [![claude code](https://img.shields.io/badge/claude%20code-.plugin-7C3AED?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin) [![skill platforms](https://img.shields.io/badge/skill%20platforms-.skill-16A34A?style=flat-square)](https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill)
 
 ---
 
