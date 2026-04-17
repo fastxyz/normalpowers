@@ -1,198 +1,157 @@
-# Superpowers
+# normalpowers
 
-Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
+**Give any LLM the power to ask the right question.**
 
-## How it works
+normalpowers is a portable prompt bundle that turns ChatGPT, Gemini, or any flavor of Claude into a patient interviewer who asks the right questions, surfaces unexamined assumptions, and walks you through rigorous thinking on any knowledge-work problem.
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do. 
+No plugin to install. No tool system required. Paste the master prompt, start a conversation.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
+---
 
-After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
+## Built on the shoulders of superpowers
 
-Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the plan you put together.
+normalpowers is a fork of **[superpowers](https://github.com/obra/superpowers)** by [Jesse Vincent](https://blog.fsck.com/). superpowers is the original — a Claude Code plugin that makes LLMs meaningfully smarter at software work by giving them a metacognitive layer: **"before you act, check which skill applies."**
 
-There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
+Jesse's insight is the whole idea. We are deeply grateful the project exists.
 
+What normalpowers changes:
 
-## Sponsorship
+- **Target: every LLM**, not just Claude Code. ChatGPT Custom GPTs, Gemini Gems, Claude Projects, Claude.ai free tier, Claude API, and anything else with a system-prompt slot.
+- **Scope: knowledge work**, not software development. The skills we kept (`brainstorming`, `writing-plans`, `verification-before-completion`, `writing-skills`) were already domain-neutral. We re-exampled them for product, strategy, research, writing, ops, sales, and more.
+- **Stripped:** `test-driven-development`, `executing-plans` (replaced by `following-your-plan`), `using-git-worktrees`, `subagent-driven-development`, `requesting-code-review`, `dispatching-parallel-agents`, `finishing-a-development-branch`, and all plugin/hook/tool-system machinery.
 
-If Superpowers has helped you do stuff that makes money and you are so inclined, I'd greatly appreciate it if you'd consider [sponsoring my opensource work](https://github.com/sponsors/obra).
+If you build software, use **superpowers** — it is tuned for that and sharper than anything we could offer. If you work on everything else, try **normalpowers**.
 
-Thanks! 
+See [docs/comparison-to-superpowers.md](docs/comparison-to-superpowers.md) for a full side-by-side.
 
-- Jesse
+---
 
+## What It Is
 
-## Installation
+Eight skills that shape how your LLM approaches knowledge work:
 
-**Note:** Installation differs by platform. 
+| Skill | Use when… |
+|---|---|
+| `brainstorming` | You're figuring out WHAT to build, write, decide, or plan. Before drafting. |
+| `writing-plans` | You have a clear target and need to break it into executable steps. |
+| `following-your-plan` | A plan exists and you're executing it. |
+| `systematic-problem-solving` | Something is broken, underperforming, or unexpected. You want to understand why before fixing. |
+| `verification-before-completion` | You're about to claim "done" or "ready". Verify with evidence first. |
+| `receiving-feedback` | You got critique and need to evaluate and respond. |
+| `writing-skills` | You want to author a new skill for your own workflow. |
+| `using-normalpowers` | The entry-point skill every conversation starts with. |
 
-### Claude Code Official Marketplace
+The LLM is instructed to check which skill applies **before** responding — even before asking clarifying questions. This is the whole trick.
 
-Superpowers is available via the [official Claude plugin marketplace](https://claude.com/plugins/superpowers)
+---
 
-Install the plugin from Anthropic's official marketplace:
+## Install
 
-```bash
-/plugin install superpowers@claude-plugins-official
+Copy `normalpowers.md` from this repo. Paste it into whichever platform you use.
+
+Install guide priority: Claude first (it's our internal stack), then ChatGPT and Gemini.
+
+### Claude.ai — Projects (recommended)
+
+1. Open [claude.ai](https://claude.ai) → **Projects** → **New project**.
+2. In the project's **Custom instructions** field, paste the full contents of [`normalpowers.md`](normalpowers.md).
+3. (Optional, improves behavior) Attach the individual `skills/*/SKILL.md` files to the project as project knowledge. Claude will pull them in when the master prompt references them.
+4. Start a chat in the project. Say *"I want to plan a hackathon"* — Claude should enter brainstorming mode, asking one question at a time, rather than jumping to a plan.
+
+### Claude.ai — Free tier (no Projects)
+
+1. Start a new conversation.
+2. Paste [`normalpowers.md`](normalpowers.md) as your first message.
+3. Continue the conversation from there. The behavior persists for the session. Repeat the paste for each new session.
+
+### Claude API / SDK
+
+Pass `normalpowers.md` as the `system` parameter:
+
+```python
+from anthropic import Anthropic
+
+with open("normalpowers.md") as f:
+    system_prompt = f.read()
+
+client = Anthropic()
+response = client.messages.create(
+    model="claude-opus-4-7",
+    system=system_prompt,
+    max_tokens=4096,
+    messages=[{"role": "user", "content": "I want to plan a hackathon."}],
+)
 ```
 
-### Claude Code (Superpowers Marketplace)
+For deeper behavior, concatenate selected `skills/*/SKILL.md` files after the master prompt.
 
-The Superpowers marketplace provides Superpowers and some other related plugins for Claude Code.
+### ChatGPT — Custom GPT (Plus/Team)
 
-In Claude Code, register the marketplace first:
+1. ChatGPT → **Explore GPTs** → **Create**.
+2. In the **Configure** tab's **Instructions** field, paste [`normalpowers.md`](normalpowers.md).
+3. Under **Knowledge**, upload the eight `skills/*/SKILL.md` files so the GPT can retrieve them when the master prompt references a skill by name.
+4. Save. Start a conversation.
 
-```bash
-/plugin marketplace add obra/superpowers-marketplace
-```
+If the GPT ignores the skills, try pasting the master prompt as the opening user message instead — Custom GPT Instructions are sometimes deprioritized for long prompts.
 
-Then install the plugin from this marketplace:
+### Gemini — Gems (Advanced)
 
-```bash
-/plugin install superpowers@superpowers-marketplace
-```
+1. Gemini → **Gems** → **New Gem**.
+2. In **Instructions**, paste [`normalpowers.md`](normalpowers.md).
+3. Gems don't support file retrieval, so the individual skill files must be inlined. For full-fidelity behavior, paste the relevant skill file into the chat when the Gem announces "Using `<skill>`".
 
-### OpenAI Codex CLI
+Known issue: Gemini sometimes ignores long instruction blocks. If you see it skipping straight to answers without the skill-check preamble, shorten the master prompt or paste it as the first chat message.
 
-- Open plugin search interface
+### Other LLMs
 
-```bash
-/plugins
-```
+Any LLM with a "system prompt" or equivalent (Mistral, Llama variants, local models): same pattern as Claude API. Paste `normalpowers.md` as the system message.
 
-Search for Superpowers
+---
 
-```bash
-superpowers
-```
+## Quick Demo
 
-Select `Install Plugin`
+After installing on any platform, try this conversation:
 
-### OpenAI Codex App
+> **You:** I want to plan a launch for our new onboarding flow next month.
+>
+> **LLM (with normalpowers):** Using `brainstorming` to sharpen this launch plan.
+>
+> Before I suggest anything, a few questions — one at a time.
+>
+> Who is the primary audience for the new onboarding flow — existing customers, new signups, or a specific segment?
 
-- In the Codex app, click on Plugins in the sidebar.
-- You should see `Superpowers` in the Coding section. 
-- Click the `+` next to Superpowers and follow the prompts.
+Without normalpowers, most LLMs will produce a plausible-looking launch plan template in the first response. That's the failure mode normalpowers exists to prevent.
 
+See [`examples/`](examples/) for longer transcripts.
 
-### Cursor (via Plugin Marketplace)
-
-In Cursor Agent chat, install from marketplace:
-
-```text
-/add-plugin superpowers
-```
-
-or search for "superpowers" in the plugin marketplace.
-
-### OpenCode
-
-Tell OpenCode:
-
-```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
-```
-
-**Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)
-
-### GitHub Copilot CLI
-
-```bash
-copilot plugin marketplace add obra/superpowers-marketplace
-copilot plugin install superpowers@superpowers-marketplace
-```
-
-### Gemini CLI
-
-```bash
-gemini extensions install https://github.com/obra/superpowers
-```
-
-To update:
-
-```bash
-gemini extensions update superpowers
-```
-
-## The Basic Workflow
-
-1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
-
-2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
-
-3. **writing-plans** - Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
-
-4. **subagent-driven-development** or **executing-plans** - Activates with plan. Dispatches fresh subagent per task with two-stage review (spec compliance, then code quality), or executes in batches with human checkpoints.
-
-5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
-
-6. **requesting-code-review** - Activates between tasks. Reviews against plan, reports issues by severity. Critical issues block progress.
-
-7. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
-
-**The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
-
-## What's Inside
-
-### Skills Library
-
-**Testing**
-- **test-driven-development** - RED-GREEN-REFACTOR cycle (includes testing anti-patterns reference)
-
-**Debugging**
-- **systematic-debugging** - 4-phase root cause process (includes root-cause-tracing, defense-in-depth, condition-based-waiting techniques)
-- **verification-before-completion** - Ensure it's actually fixed
-
-**Collaboration** 
-- **brainstorming** - Socratic design refinement
-- **writing-plans** - Detailed implementation plans
-- **executing-plans** - Batch execution with checkpoints
-- **dispatching-parallel-agents** - Concurrent subagent workflows
-- **requesting-code-review** - Pre-review checklist
-- **receiving-code-review** - Responding to feedback
-- **using-git-worktrees** - Parallel development branches
-- **finishing-a-development-branch** - Merge/PR decision workflow
-- **subagent-driven-development** - Fast iteration with two-stage review (spec compliance, then code quality)
-
-**Meta**
-- **writing-skills** - Create new skills following best practices (includes testing methodology)
-- **using-superpowers** - Introduction to the skills system
+---
 
 ## Philosophy
 
-- **Test-Driven Development** - Write tests first, always
-- **Systematic over ad-hoc** - Process over guessing
-- **Complexity reduction** - Simplicity as primary goal
-- **Evidence over claims** - Verify before declaring success
+> **"Normal" thinking is hard.** Asking the right question, sharpening an idea before producing anything, decomposing into small verifiable steps, checking evidence before declaring done — these are the habits that distinguish a careful senior operator from a frantic junior one. LLMs default to frantic junior. normalpowers makes them act like careful seniors.
 
-Read [the original release announcement](https://blog.fsck.com/2025/10/09/superpowers/).
+Full thesis: [docs/philosophy.md](docs/philosophy.md).
+
+---
 
 ## Contributing
 
-The general contribution process for Superpowers is below. Keep in mind that we don't generally accept contributions of new skills and that any updates to skills must work across all of the coding agents we support.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. Short version:
 
-1. Fork the repository
-2. Switch to the 'dev' branch
-3. Create a branch for your work
-4. Follow the `writing-skills` skill for creating and testing new and modified skills
-5. Submit a PR, being sure to fill in the pull request template.
+- **Issue-first** for non-trivial changes.
+- **One problem per PR**, tested on a real LLM session.
+- Domain-specific skills (sales-discovery, 1:1-prep, specific-industry-workflow) belong in your **own** bundle, not core. The `writing-skills` skill is the entry point for authoring them.
+- Platform integrations, rebrands, and tone sweeps without a behavioral problem get closed.
 
-See `skills/writing-skills/SKILL.md` for the complete guide.
+## Staying Close to Upstream
 
-## Updating
-
-Superpowers updates are somewhat coding-agent dependent, but are often automatic.
+normalpowers deliberately mirrors superpowers' directory structure where we kept a skill unchanged in shape, so that `git cherry-pick` from obra/superpowers remains tractable. See [docs/upstream-sync.md](docs/upstream-sync.md) for the sync workflow.
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License. Jesse Vincent's 2025 copyright is retained verbatim in [LICENSE](LICENSE). Pi Squared Inc. and normalpowers contributors hold 2026. Derivation is documented in [NOTICE](NOTICE).
 
-## Community
+## Acknowledgements
 
-Superpowers is built by [Jesse Vincent](https://blog.fsck.com) and the rest of the folks at [Prime Radiant](https://primeradiant.com).
-
-- **Discord**: [Join us](https://discord.gg/35wsABTejz) for community support, questions, and sharing what you're building with Superpowers
-- **Issues**: https://github.com/obra/superpowers/issues
-- **Release announcements**: [Sign up](https://primeradiant.com/superpowers/) to get notified about new versions
+- **[Jesse Vincent](https://blog.fsck.com/)** and the team at [Prime Radiant](https://primeradiant.com) — for superpowers, and for the insight that makes this whole approach work.
+- **[Pi Squared Inc.](https://pi2.network) / [FAST](https://fast.xyz)** — for the room to build this and the internal dogfooding that shaped the knowledge-work examples.
