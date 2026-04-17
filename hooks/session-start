@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# SessionStart hook for normalpowers plugin
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Read normalpowers.md master prompt
+normalpowers_content=$(cat "${PLUGIN_ROOT}/normalpowers.md" 2>&1 || echo "Error reading normalpowers.md")
+
+# Escape string for JSON embedding
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+normalpowers_escaped=$(escape_for_json "$normalpowers_content")
+session_context="<EXTREMELY_IMPORTANT>\nYou have normalpowers.\n\n**Below is the full content of your normalpowers master prompt. Follow it for every response.**\n\n${normalpowers_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Output in the format the current platform expects
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context"
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0
