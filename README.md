@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/fastxyz/normalpowers/releases/latest"><img src="https://img.shields.io/github/v/release/fastxyz/normalpowers?style=flat-square&label=release&color=555" alt="release"></a>
-  <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip"><img src="https://img.shields.io/badge/claude.ai-.zip-0EA5E9?style=flat-square" alt="claude.ai .zip"></a>
+  <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.zip"><img src="https://img.shields.io/badge/ai%20agent-.zip-0EA5E9?style=flat-square" alt="ai agent .zip"></a>
   <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.plugin"><img src="https://img.shields.io/badge/claude%20code-.plugin-7C3AED?style=flat-square" alt="claude code .plugin"></a>
   <a href="https://github.com/fastxyz/normalpowers/releases/download/v0.1.0/normalpowers-v0.1.0.skill"><img src="https://img.shields.io/badge/skill%20platforms-.skill-16A34A?style=flat-square" alt=".skill"></a>
 </p>
