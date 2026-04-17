@@ -55,7 +55,7 @@ Install guide priority: Claude first (it's our internal stack), then ChatGPT and
 
 1. Open [claude.ai](https://claude.ai) → **Projects** → **New project**.
 2. In the project's **Custom instructions** field, paste the full contents of [`normalpowers.md`](normalpowers.md).
-3. (Optional, improves behavior) Attach the individual `skills/*/SKILL.md` files to the project as project knowledge. Claude will pull them in when the master prompt references them.
+3. (Optional, improves behavior) Download the latest [`normalpowers-vX.Y.Z.zip`](https://github.com/fastxyz/normalpowers/releases/latest) from Releases, extract it, and drag the extracted folder into the project's knowledge section. Or upload the individual `skills/*/SKILL.md` files from GitHub if you prefer.
 4. Start a chat in the project. Say *"I want to plan a hackathon"* — Claude should enter brainstorming mode, asking one question at a time, rather than jumping to a plan.
 
 ### Claude.ai — Free tier (no Projects)
